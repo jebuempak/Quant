@@ -14,7 +14,7 @@ password = Config.get('Rabbit-1', 'pass')
 
 class Service( object ):
 
-    def __init__( self, topics, duration = 360, host_ = 'localhost', verbose = True, port = 5672, user = '', password = '' ):
+    def __init__( self, topics, duration = 360, host = 'localhost', verbose = True, port = 5672, user = '', password = '' ):
         credentials = PlainCredentials(user, password)
         self._connection = BlockingConnection( ConnectionParameters( host,  port, '/', credentials ) )
         self._channel = self._connection.channel()

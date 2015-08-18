@@ -3,6 +3,12 @@
 from pika import BlockingConnection, ConnectionParameters
 import datetime 
 import time, random, math
+import ConfigParser
+
+Config = ConfigParser.ConfigParser()
+quant_ini = "'/home/osci/source/Quant/component/etc/quant.ini"
+Config.read(quant_ini)
+hostname = Config.get('Rabbit-1', 'hostname')
 
 class Service( object ):
 
@@ -51,7 +57,7 @@ def main():
     partition = dict()
     partition[ 'XKRX-A' ] = tuple( [ 'XKRX-CS-KR-' + _formatCode( i ) for i in range( 100, 105 ) ] )
     partition[ 'XKRX-B' ] = tuple( [ 'XKRX-CS-KR-' + _formatCode( i ) for i in range( 250, 258 ) ] )
-    s = Service( partition, duration = 10 )
+    s = Service( partition, duration = 10, host=hostname )
 
     try:
         s.run()

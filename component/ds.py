@@ -9,7 +9,7 @@ Config = ConfigParser.ConfigParser()
 quant_ini = '/home/osci/source/Quant/etc/quant.ini'
 Config.read(quant_ini)
 hostname = Config.get('Rabbit-1', 'hostname')
-port = Config.get('Rabbit-1', 'port')
+port = int(Config.get('Rabbit-1', 'port'))
 user = Config.get('Rabbit-1', 'user')
 password = Config.get('Rabbit-1', 'pass')
 

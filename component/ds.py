@@ -3,15 +3,13 @@
 from pika import BlockingConnection, ConnectionParameters
 import datetime 
 import time, random, math
+
 import ConfigParser
-
-
 Config = ConfigParser.ConfigParser()
 quant_ini = '/home/osci/source/Quant/etc/quant.ini'
 Config.read(quant_ini)
 hostname = Config.get('Rabbit-1', 'hostname')
 
-hostname="localhost"
 class Service( object ):
 
     def __init__( self, partition, interval = 5, duration = 360, seed = 0, host = 'localhost', verbose = True ):

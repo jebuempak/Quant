@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from pika import BlockingConnection, ConnectionParameters
+from pika import BlockingConnection, ConnectionParameters, PlainCredentials
 import datetime
 
 import ConfigParser
@@ -8,12 +8,15 @@ Config = ConfigParser.ConfigParser()
 quant_ini = '/home/osci/source/Quant/etc/quant.ini'
 Config.read(quant_ini)
 hostname = Config.get('Rabbit-1', 'hostname')
+port = Config.get('Rabbit-1', 'port')
+user = Config.get('Rabbit-1', 'user')
+password = Config.get('Rabbit-1', 'pass')
 
 class Service( object ):
 
-    def __init__( self, name, topics, duration = 360, dimension = 20, host_ = 'localhost', verbose = True ):
-
-        self._connection = BlockingConnection( ConnectionParameters( host = host_ ) )
+    def __init__( self, name, topics, duration = 360, dimension = 20, host = 'localhost', verbose = True, port = 5672, user = '', password = ''  ):
+        credentials = PlainCredentials(user, password)
+        self._connection = BlockingConnection( ConnectionParameters( host,  port, '/', credentials ) )
         self._channel = self._connection.channel()
         self._channel.exchange_declare( exchange = 'topic_logs', type = 'topic' )
         self._queueID = self._channel.queue_declare( exclusive = True ).method.queue
@@ -94,7 +97,7 @@ def main():
     topics = [ 'DS.' + g for g in groups ]
     print topics
 
-    s = Service( options.name, topics, duration = 10, host=hostname )
+    s = Service( options.name, topics, duration = 10, host=hostname, port=port, user=user, password=password )
     try:
         s.run()
     except KeyboardInterrupt:

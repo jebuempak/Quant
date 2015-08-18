@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from pika import BlockingConnection, ConnectionParameters
+from pika import BlockingConnection, ConnectionParameters, PlainCredentials
 import datetime 
 import time, random, math
 
@@ -9,12 +9,15 @@ Config = ConfigParser.ConfigParser()
 quant_ini = '/home/osci/source/Quant/etc/quant.ini'
 Config.read(quant_ini)
 hostname = Config.get('Rabbit-1', 'hostname')
+port = Config.get('Rabbit-1', 'port')
+user = Config.get('Rabbit-1', 'user')
+password = Config.get('Rabbit-1', 'pass')
 
 class Service( object ):
 
-    def __init__( self, partition, interval = 5, duration = 360, seed = 0, host = 'localhost', verbose = True ):
-
-        self._connection = BlockingConnection( ConnectionParameters( host = host ) )
+    def __init__( self, partition, interval = 5, duration = 360, seed = 0, host = 'localhost', verbose = True, port = 5672, user = '', password = '' ):
+        credentials = PlainCredentials(user, password)
+        self._connection = BlockingConnection( ConnectionParameters( host,  port, '/', credentials ) )
         self._channel = self._connection.channel()
         self._channel.exchange_declare( exchange = 'topic_logs', type = 'topic' )
         self._partition = partition
@@ -57,7 +60,7 @@ def main():
     partition = dict()
     partition[ 'XKRX-A' ] = tuple( [ 'XKRX-CS-KR-' + _formatCode( i ) for i in range( 100, 105 ) ] )
     partition[ 'XKRX-B' ] = tuple( [ 'XKRX-CS-KR-' + _formatCode( i ) for i in range( 250, 258 ) ] )
-    s = Service( partition, duration = 10, host=hostname )
+    s = Service( partition, duration = 10, host=hostname, port=port, user=user, password=password )
 
     try:
         s.run()

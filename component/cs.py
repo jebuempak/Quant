@@ -3,6 +3,12 @@
 from pika import BlockingConnection, ConnectionParameters
 import datetime
 
+import ConfigParser
+Config = ConfigParser.ConfigParser()
+quant_ini = '/home/osci/source/Quant/etc/quant.ini'
+Config.read(quant_ini)
+hostname = Config.get('Rabbit-1', 'hostname')
+
 class Service( object ):
 
     def __init__( self, topics, duration = 360, host_ = 'localhost', verbose = True ):
@@ -55,7 +61,7 @@ def main():
     topics = [ 'SS.' + g for g in groups ]
     print topics
 
-    s = Service( topics, duration = 10 )
+    s = Service( topics, duration = 10, host=hostname )
     try:
         s.run()
     except KeyboardInterrupt:
